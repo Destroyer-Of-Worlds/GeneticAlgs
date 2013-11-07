@@ -11,10 +11,15 @@
 	
 	double myfun(double x);
 	double myfun1(double x);
+	double byaka(double x);
 	double randver();
 	void popRandGenerator(double a, double b, double pop[], int n);
 	void createIntPop(double pop[], long long population[], long n, int acc);
 	void crossover(long long population[], long long newPopulation[], int n);
-	
+	long long createRandMutationMask(long long n);
+	void mutation(long long newPopulation[], int n, int m);
+	int compare (const void * a, const void * b);
+	int intpow(int base, int exp);
+	void globmin(double x1, double x2, int acc, DFD f);
 
 #endif /* GEN_ALG_FUN_H */
