@@ -13,17 +13,6 @@ int main() {
 	cin >> x1 >> x2;
 	cout << "enter accuracy" << endl;
 	cin >> acc;
-//	globmin(x1, x2, acc, myfun);
-//	int a = 4;
-//	long long b = (long long) a;
-	const int n = 4;
-		double pop[n] = {0, 0, 0, 0};
-	long long population[n];
-	popRandGenerator(x1, x2, pop, n);
-	createIntPop(pop, population, n, acc);
-//	cout << (a & 1) << endl;
-	for (int i = 0; i < n; ++i) {
-		cout << pop[i] << " " << population[i] << endl;
-	}
+	globmin(x1, x2, acc, byaka);
 	system("pause");
 }
