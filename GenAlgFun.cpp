@@ -124,6 +124,5 @@ void globmin(double x1, double x2, int acc, DFD f) {
 //		flag = (generation[m - 1].y - generation[0].y) > 0.001;
 		++counter;
 	}
-//	cout << "globmin is " << generation[0].y << " in x =  " << generation[0].x << endl;
-	printf("globmin is %7.5f in x = %7.5f \n", generation[0].y, generation[0].x);
+	cout << "globmin is " << generation[0].y << " in x =  " << generation[0].x << endl;
 }
