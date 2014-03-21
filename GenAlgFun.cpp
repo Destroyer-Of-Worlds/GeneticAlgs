@@ -5,124 +5,106 @@
 #include "GenAlgFun.h"
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 using namespace::std;
 
-//пример целевой функции
 double myfun(double x) {
 	return 5 - 24 * x + 17 * pow(x, 2) - (11/3.0) * pow(x, 3) + (1/4.0) * pow(x, 4);
 }
 
-//ещё один пример целевой функции
 double myfun1(double x){
 	return sin(5 * x) - 2 * cos(x) + 3;
 }
 
-//совсем бяка
 double byaka(double x){
 	return fabs(sin(10 * x) + 0.8*cos(20*sqrt(2.0)*x)+0.5*sin(15*sqrt(3.0)*x));
 }
 
-//случайное число от 0 до 1
 double randver() {
 	return ((double)rand()) / RAND_MAX;
 }
 
-//генерация популяции из n особей
-//на вход подаётся отрезок [a, b]
-//на выходе получаем массив чисел pop[] 
-void popRandGenerator(double a, double b, double pop[], int n) {
-//	pop[0] = a;
-//	pop[1] = b;
+void popRandGenerator(double a, double b, vector<double> & pop, int n) {
+	pop.push_back(a);
+	pop.push_back(b);
 	for (int i = 0; i < n; ++i){
-		pop[i] = (rand() % (int)floor(b - a)) + a + randver();
+		double buf = (rand() % (int)floor(b - a)) + a + randver();
+		pop.push_back(buf);
 	}
 }
 
-//создаёт популяцию из целочисленных особей
-void createIntPop(double pop[], long long population[], long n, int acc) {
-	for (int i = 0; i < n; ++i) {
-		population[i] = (long long)(pop[i] * pow(10.0, acc));
-	}
-}
-
-//на самом деле, это никакой не кроссинговер.
-//Это среднее арифметическое брачных пар.
-void crossover(long long population[], long long newPopulation[], int n){
-	int k = n;
-	for (int i = 0; i < n; ++i)
-		newPopulation[i] = population[i];
-	for (int i = 0; i < n - 1; ++i) {
-		for (int j = i + 1; j < n; ++ j){
-			newPopulation[k] = (population[i] + population[j]) / 2;
-			++k;
+void crossover(vector <double> & population, vector<double> & newPopulation, int n, int m, double x1, double x2){
+	int k = 0;
+	for (int i = 0; i < m; ++i){
+		double pop;
+		do{
+		int ind1 = rand() % n;
+		int ind2 = rand() % n;
+		double alpha = randver()*1.5-0.25;
+		 pop = alpha * population[ind1] + (1 - alpha)* population[ind2];
+		} while ((pop>x2)||(pop<x1));
+	newPopulation.push_back(pop);
 		}
+}
+
+void mutation(vector<double> & newPopulation, int n, double x1, double x2){
+	double alpha = 0.5 * (x2-x1);
+	for	(int i = 0; i < n; ++i) {
+		double pop=0;
+		do{ 
+			pop=newPopulation[i];
+		if (randver() > 0.25)
+			continue;
+		int signum = randver() > 0.5 ? -1 : 1;
+		double delta = 0;
+		for (int j = 0; j < 20; ++j){
+			int a = randver() > 1.0/20. ? 0 : 1;
+			delta += a * pow(2.0, -j);
+		}
+		pop += signum * alpha * delta;
+		}while ((pop>x2)||(pop<x1));
+		newPopulation[i]=pop;
 	}
 }
 
-//создаёт случайную маску для мутации
-long long createRandMutationMask(long long n){
-	int mp = 0;
-	while (n > 1) {
-		n /= 2;
-		++mp;
-	}
-	return (long long)pow(2.0, rand() % (mp - 1));
+bool compare (vector<double> & a, vector<double> & b){
+	return (a[a.size()-1] < b[b.size()-1]);
 }
 
-//мутация
-void mutation(long long newPopulation[], int n, int m){
-	for	(int i = n; i < m; ++i) {
-		double ver = randver(); 
-		if (ver > 0.7)
-			newPopulation[i] = newPopulation[i] ^ createRandMutationMask(newPopulation[i]);
-	}
+/*
+union{
+struct {
+	int a1:1;
+	int a2:1;
+	...
+		int a32:1;
+}a;
+float b;
 }
-
-//компаратор для qsort
-int compare (const void * a, const void * b){
-	select* c = (select*)a;
-    select* d = (select*)b;
-  return (c->y > d->y);
-}
-
-//возведение числа base в степень exp для целых
-int intpow(int base, int exp){
-	int res = 1;
-	if (exp < 0)
-		return 0;
-	if (exp == 0)
-		return 1;
-	for (int i = 1; i <= exp; ++i)
-		res *= base;
-	return res;
-}
-
-//поиск глобального минимума функции f на отрезке [x1, x2]
-void globmin(double x1, double x2, int acc, DFD f) {
-	const int n = 4;
-	const int m = 10;
-	double pop[n];
-	long long population[n];
-	long long newPopulation[m];
-	select generation[m];
-	bool flag = true;
+*/
+void globmin(double x1, double x2, DFD f) {
+	const int n = 50;
+	const int m = 500;
+	vector<double> population;
+	vector<double> newPopulation;
+	vector<vector<double> > generation;
 	int counter = 0;
-	popRandGenerator(x1, x2, pop, n);
-	while ( counter < 1000){                     //magic
-		createIntPop(pop, population, n, acc);
-		crossover(population, newPopulation, n);
-		mutation(newPopulation, n, m);
+	popRandGenerator(x1, x2, population, n);
+	while (counter < 1000){
+		crossover(population, newPopulation, n,m,x1,x2);
+		mutation(newPopulation, m, x1,x2);
 		for (int i = 0; i < m; ++i){
-			generation[i].x = (newPopulation[i] / pow(10.0, acc));
-			generation[i].y = f(generation[i].x);
+			generation[i][0] = (newPopulation[i]);
+			generation[i][1] = f(generation[i][0]);
 		}
-		qsort(generation, m, sizeof(select), compare);
+		sort(generation.begin(), generation.end(), compare);
 		for (int i = 0; i < n; ++i){
-			pop[i] = generation[i].x;
-		}
-//		flag = (generation[m - 1].y - generation[0].y) > 0.001;
+			population[i] = generation[i][0];
+		}		
 		++counter;
+		cout << counter << endl;
 	}
-	cout << "globmin is " << generation[0].y << " in x =  " << generation[0].x << endl;
+	cout << "globmin is " << generation[0][1] << " in x =  " << generation[0][0] << endl;
 }
