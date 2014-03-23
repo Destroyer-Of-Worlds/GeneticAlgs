@@ -1,11 +1,6 @@
 #ifndef GEN_ALG_FUN_H 
 #define GEN_ALG_FUN_H 
-
-
-	struct select{
-		double y;
-		double x;
-	};
+#include <vector>
 
 	typedef double (* DFD)(double);
 	
@@ -13,13 +8,10 @@
 	double myfun1(double x);
 	double byaka(double x);
 	double randver();
-	void popRandGenerator(double a, double b, double pop[], int n);
-	void createIntPop(double pop[], long long population[], long n, int acc);
-	void crossover(long long population[], long long newPopulation[], int n);
-	long long createRandMutationMask(long long n);
-	void mutation(long long newPopulation[], int n, int m);
-	int compare (const void * a, const void * b);
-	int intpow(int base, int exp);
-	void globmin(double x1, double x2, int acc, DFD f);
+	void popRandGenerator(double a, double b, std::vector<double> & pop, int n);
+	void crossover(std::vector<double> & population, std::vector<double> & newPopulation, int n, int m, double x1, double x2);
+	void mutation(std::vector<double> & newPopulation, int n, double x1, double x2);
+	bool compare (std::vector<double> & a, std::vector<double> & b);
+	void globmin(double x1, double x2, DFD f);
 
 #endif /* GEN_ALG_FUN_H */
