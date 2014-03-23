@@ -10,22 +10,29 @@
 
 using namespace::std;
 
+//пример целевой функции
 double myfun(double x) {
 	return 5 - 24 * x + 17 * pow(x, 2) - (11/3.0) * pow(x, 3) + (1/4.0) * pow(x, 4);
 }
 
+//ещё один пример целевой функции
 double myfun1(double x){
 	return sin(5 * x) - 2 * cos(x) + 3;
 }
 
+//совсем бяка
 double byaka(double x){
 	return fabs(sin(10 * x) + 0.8*cos(20*sqrt(2.0)*x)+0.5*sin(15*sqrt(3.0)*x));
 }
 
+//случайное число от 0 до 1
 double randver() {
 	return ((double)rand()) / RAND_MAX;
 }
 
+//генерация популяции из n особей
+//на вход подаётся отрезок [a, b]
+//на выходе получаем массив чисел pop[] 
 void popRandGenerator(double a, double b, vector<double> & pop, int n) {
 	pop.push_back(a);
 	pop.push_back(b);
@@ -35,6 +42,8 @@ void popRandGenerator(double a, double b, vector<double> & pop, int n) {
 	}
 }
 
+//на самом деле, это никакой не кроссинговер.
+//теперь это промежуточная рекомбинация
 void crossover(vector <double> & population, vector<double> & newPopulation, int n, int m, double x1, double x2){
 	int k = 0;
 	for (int i = 0; i < m; ++i){
@@ -49,6 +58,7 @@ void crossover(vector <double> & population, vector<double> & newPopulation, int
 		}
 }
 
+//мутация
 void mutation(vector<double> & newPopulation, int n, double x1, double x2){
 	double alpha = 0.5 * (x2-x1);
 	for	(int i = 0; i < n; ++i) {
@@ -69,6 +79,7 @@ void mutation(vector<double> & newPopulation, int n, double x1, double x2){
 	}
 }
 
+//компаратор для sort
 bool compare (vector<double> & a, vector<double> & b){
 	return (a[a.size()-1] < b[b.size()-1]);
 }
@@ -84,12 +95,14 @@ struct {
 float b;
 }
 */
+//поиск глобального минимума функции f на отрезке [x1, x2]
 void globmin(double x1, double x2, DFD f) {
 	const int n = 50;
 	const int m = 500;
 	vector<double> population;
 	vector<double> newPopulation;
 	vector<vector<double> > generation;
+	generation.assign(m, vector<double>(2));
 	int counter = 0;
 	popRandGenerator(x1, x2, population, n);
 	while (counter < 1000){
@@ -104,7 +117,8 @@ void globmin(double x1, double x2, DFD f) {
 			population[i] = generation[i][0];
 		}		
 		++counter;
-		cout << counter << endl;
+//		cout << counter << endl;
 	}
 	cout << "globmin is " << generation[0][1] << " in x =  " << generation[0][0] << endl;
 }
+
